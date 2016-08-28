@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(BTLock_Simulator)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c90")
 
-set(SOURCE_FILES Actor.c BTLock.c OSAL_SimpleBLEPeripheral.c simpleBLEPeripheral.c SimpleBLEPeripheral_Main.c)
+set(SOURCE_FILES App.c Actor.c BTLock.c OSAL_SimpleBLEPeripheral.c simpleBLEPeripheral.c SimpleBLEPeripheral_Main.c)
 add_definitions(-DINT_HEAP_LEN=3072
         -DOSAL_CBTIMER_NUM_TASKS=1
         -DHAL_AES_DMA=TRUE

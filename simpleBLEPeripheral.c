@@ -80,7 +80,8 @@
   #include "oad_target.h"
 #endif
 
-#include "Security.h"
+//#include "Security.h"
+#include "App.h"
 
 /*********************************************************************
  * MACROS
@@ -162,27 +163,30 @@ static gaprole_States_t gapProfileState = GAPROLE_INIT;
 static uint8 scanRspData[] =
 {
   // complete name
-  0x14,   // length of this data
-  GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  0x53,   // 'S'
-  0x69,   // 'i'
-  0x6d,   // 'm'
-  0x70,   // 'p'
-  0x6c,   // 'l'
-  0x65,   // 'e'
-  0x42,   // 'B'
-  0x4c,   // 'L'
-  0x45,   // 'E'
-  0x50,   // 'P'
-  0x65,   // 'e'
-  0x72,   // 'r'
-  0x69,   // 'i'
-  0x70,   // 'p'
-  0x68,   // 'h'
-  0x65,   // 'e'
-  0x72,   // 'r'
-  0x61,   // 'a'
-  0x6c,   // 'l'
+//  0x14,   // length of this data
+//  GAP_ADTYPE_LOCAL_NAME_COMPLETE,
+//  0x53,   // 'S'
+//  0x69,   // 'i'
+//  0x6d,   // 'm'
+//  0x70,   // 'p'
+//  0x6c,   // 'l'
+//  0x65,   // 'e'
+//  0x42,   // 'B'
+//  0x4c,   // 'L'
+//  0x45,   // 'E'
+//  0x50,   // 'P'
+//  0x65,   // 'e'
+//  0x72,   // 'r'
+//  0x69,   // 'i'
+//  0x70,   // 'p'
+//  0x68,   // 'h'
+//  0x65,   // 'e'
+//  0x72,   // 'r'
+//  0x61,   // 'a'
+//  0x6c,   // 'l'
+                0x07,
+                GAP_ADTYPE_LOCAL_NAME_COMPLETE,
+                'B', 'T', 'L', 'o', 'c', 'k',
 
   // connection interval range
   0x05,   // length of this data
@@ -367,7 +371,7 @@ void SimpleBLEPeripheral_Init( uint8 task_id )
     uint8 charValue3 = 3;
     uint8 charValue4 = 4;
     uint8 charValue5[SIMPLEPROFILE_CHAR5_LEN] = { 1, 2, 3, 4, 5 };
-    int32 btlockAuthValue[BTLOCK_AUTH_CHAR_LEN]={0,0,0,0,0};
+    uint8 btlockAuthValue[BTLOCK_AUTH_CHAR_LEN]={0,0,0,0,0};
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR1, sizeof ( uint8 ), &charValue1 );
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR2, sizeof ( uint8 ), &charValue2 );
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR3, sizeof ( uint8 ), &charValue3 );
@@ -460,7 +464,7 @@ uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
 
   if ( events & SYS_EVENT_MSG )
   {
-    uint8 *pMsg;
+      uint8 *pMsg;
 
     if ( (pMsg = osal_msg_receive( simpleBLEPeripheral_TaskID )) != NULL )
     {
@@ -753,7 +757,7 @@ static void simpleProfileChangeCB( uint8 paramID )
 {
   uint8 newValue;
   
-  uint8 authCharValue[16]={0,0,0,0,0};
+  uint8 authCharValue[16]={0};
 
   switch( paramID )
   {
@@ -777,7 +781,13 @@ static void simpleProfileChangeCB( uint8 paramID )
       
     case BTLOCK_AUTH_CHAR:
       SimpleProfile_GetParameter( BTLOCK_AUTH_CHAR, authCharValue );
-      // TODO
+      newValue = authCharValue[0];
+      if ((newValue & 0x80) == 0) {
+          appEvt_t * msg = (appEvt_t *) osal_msg_allocate(sizeof(appEvt_t));
+          msg->data = osal_mem_alloc(16);
+          osal_memcpy(msg->data, authCharValue, 16);
+          osal_msg_send(App_TaskID, msg);
+      }
       break;
 
     default:

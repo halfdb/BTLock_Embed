@@ -59,6 +59,33 @@ uint8 write_flash(uint8 position, uint8 size, void *p_buffer) {
     }
 }
 
+uint8* start_verification() {
+    uint8* ret = osal_mem_alloc(15);
+    osal_memset(ret, 0, 15);
+    uint8 v[7]={};
+    int i;
+    for(i=0;i<6;i+=2){
+        uint16 r = btl_rand16();
+        v[i] = (uint8) (r & 0xff);
+        v[i+1] = (uint8) (r>>8);
+    }
+    for(i=0; i<6; i++) {
+        unsigned char c = v[i]%62;
+        if (c < 10) {
+            c = '0'+c;
+        } else if (c < 36) {
+            c = c-10+'a';
+        } else {
+            c = c - 36 + 'A';
+        }
+        v[i] = c;
+        ret[i] = c;
+    }
+    LCD_CLS();
+    LCD_P6x8Str(0, 3, v);
+    return ret;
+}
+
 /*********************************************************************
  * @fn      btl_rand
  *
@@ -92,7 +119,7 @@ void btl_lock()
 #if (defined HAL_LCD) && (HAL_LCD == TRUE)
     LCD_CLS();
 //    HalLcdWriteString("Door Locked", HAL_LCD_LINE_4);
-    LCD_P6x8Str(0, 3, "Door Lockde");
+    LCD_P6x8Str(0, 3, "Door Locked");
 #endif // (defined HAL_LCD) && (HAL_LCD == TRUE)
     HalLedSet(HAL_LED_1, HAL_LED_MODE_OFF);
     HalLedSet(HAL_LED_2, HAL_LED_MODE_ON);

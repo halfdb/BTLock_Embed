@@ -6,7 +6,7 @@
 #include "comdef.h"
 
 /* Macros */
-#define DATA_LEN 16
+#define DATA_LEN 15
 
 /* Typedefs */
 typedef uint8 Param[DATA_LEN];
@@ -37,6 +37,8 @@ extern uint8 read_flash(uint8 position, uint8 size, void *p_buffer);
  * @return  SUCCESS if successful. FAILURE, otherwise.
  */
 extern uint8 write_flash(uint8 position, uint8 size, void *p_buffer);
+
+extern /* Param */ uint8* start_verification();
 
 /*********************************************************************
  * @fn      btl_rand

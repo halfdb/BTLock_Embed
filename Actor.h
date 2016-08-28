@@ -38,7 +38,7 @@ extern bool verify_account(uint8 uid, Param password);
  *
  * @return  SUCCESS or FAILURE. The password is filled in the Param.
  */
-extern uint8 generate_guest_pwd(Param);
+extern uint8 generate_guest_pwd(uint8 uid, Param pwd);
 
 /*********************************************************************
  * @fn      destroy_guest_pwd
@@ -47,14 +47,14 @@ extern uint8 generate_guest_pwd(Param);
  *
  * @return  SUCCESS or FAILURE.
  */
-extern uint8 destroy_guest_pwd(Param);
+extern uint8 destroy_guest_pwd(uint8);
 
 /* Admin passwords are used by admins. */
 //extern uint8 get_admin_pwd(Param);
 //extern uint8 reset_admin_pwd(Param);
 
 /* General passwords are used by users. */
-extern Param get_user_pwd(uint8 uid);
+extern uint8* get_user_pwd(uint8 uid);
 
 /* Account management */
 
@@ -69,7 +69,9 @@ extern uint8 add_user();
  * @param uid   The uid of the user.
  * @return      SUCCESS or FAILURE.
  */
-extern uint8 delete_user(int uid);
+extern uint8 delete_user(uint8 uid);
+
+extern bool has_user(uint8 uid);
 
 /* Misc */
 
