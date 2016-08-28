@@ -1,7 +1,7 @@
 #ifndef UID_DEF_H
 #define UID_DEF_H
 
-#define UID_OF(U, G) ((U)<<2+(G))
+#define UID_OF(U, G) (((U)<<2)|(G))
 #define U_FROM_UID(I) ((uint8)(((I)>>2)&7))
 #define G_FROM_UID(I) ((uint8)((I)&3))
 

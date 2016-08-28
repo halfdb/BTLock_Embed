@@ -37,6 +37,7 @@ void Actor_Init() {
             }
         }
     }
+    osal_memset(pwd_modified, 0, 4);
 }
 
 void Actor_Save() {
@@ -44,11 +45,12 @@ void Actor_Save() {
     uint8 g, u;
     for (g = 0; g < 4; g++) {
         uint8 m = pwd_modified[g];
-        for (u = 0; u < 5; u++) {
+        for (u = 1; u <= 5; u++) {
             if (m & (1<<u)) {
                 save_pwd(UID_OF(u, g));
             }
         }
+        pwd_modified[g] = 0;
     }
 }
 
@@ -97,7 +99,7 @@ uint8 generate_new_account_pwd(uint8 uid, Param pwd) {
 }
 
 /*********************************************************************
- * @brief   Destroy and de-register a guest password given.
+ * @brief   Destroy and de-register a guest with the uid.
  *
  * @return  SUCCESS or FAILURE.
  */
@@ -137,7 +139,7 @@ uint8 add_user() {
         uint8 mask = (uint8) (1<<u);
         if ((uint8) (mask & account_bitsets[0]) == 0) {
             account_bitsets[0] |= mask;
-            generate_pwd(passwords[UID_OF(u, 0)]);
+            generate_pwd(passwords[INDEX_FOR_UID(UID_OF(u, 0))]);
             pwd_modified[0] |= mask;
             return UID_OF(u, 0);
         }
