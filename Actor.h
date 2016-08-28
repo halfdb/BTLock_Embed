@@ -22,6 +22,10 @@
 
 /* Account System */
 
+extern void Actor_Init();
+
+extern void Actor_Save();
+
 /*********************************************************************
  * @fn      verify_account
  *
@@ -38,7 +42,7 @@ extern bool verify_account(uint8 uid, Param password);
  *
  * @return  SUCCESS or FAILURE. The password is filled in the Param.
  */
-extern uint8 generate_guest_pwd(uint8 uid, Param pwd);
+extern uint8 generate_new_account_pwd(uint8 uid, Param pwd);
 
 /*********************************************************************
  * @fn      destroy_guest_pwd
@@ -47,7 +51,7 @@ extern uint8 generate_guest_pwd(uint8 uid, Param pwd);
  *
  * @return  SUCCESS or FAILURE.
  */
-extern uint8 destroy_guest_pwd(uint8);
+extern uint8 delete_guest(uint8);
 
 /* Admin passwords are used by admins. */
 //extern uint8 get_admin_pwd(Param);
@@ -66,12 +70,14 @@ extern uint8 add_user();
 
 /**
  * @brief       Delete indicated user with the uid. Leave the uid blank.
- * @param uid   The uid of the user.
+ * @param u   The uid of the user.
  * @return      SUCCESS or FAILURE.
  */
-extern uint8 delete_user(uint8 uid);
+extern uint8 delete_user(uint8 u);
 
-extern bool has_user(uint8 uid);
+extern uint8 get_user_bitset();
+
+extern bool has_account(uint8 uid);
 
 /* Misc */
 

@@ -12,6 +12,7 @@ uint8 App_TaskID;
  */
 void App_Init( uint8 task_id ) {
     App_TaskID = task_id;
+    Actor_Init();
 }
 
 void App_ProcessOSALMsg(appEvt_t *ptr) {
@@ -25,7 +26,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
         if(verify_account(uid, pwd)){
             if ((uid & 0x3) != 0) {
                 // guest
-                destroy_guest_pwd(uid);
+                delete_guest(uid);
             }
             response[0] = (uint8) (code | 0x80);
             btl_unlock();
@@ -38,7 +39,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
         uint8 uid = (uint8) (code & ~MASK_3BIT);
         uint8 u_uid = (uint8) (uid>>2<<2);
         if(verify_account(u_uid, pwd)) {
-            generate_guest_pwd(uid, response+1);
+            generate_new_account_pwd(uid, response + 1);
             response[0] = (uint8) (code | 0x80);
         } else {
             response[0] = 0xff;
@@ -63,6 +64,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
                 uint8 *p = get_user_pwd(uid);
                 osal_memcpy(response + 1, p, 15);
                 response[0] = (uint8) (CC_ADD_USER | uid);
+                osal_mem_free(p);
             }
             osal_mem_free(verification);
             verification = NULL;
@@ -71,11 +73,11 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
             response[1] = CC_ASK_VERI;
         }
     } else if ((code & MASK_3BIT) == CC_DEL_USER) {
-        uint8 uid = (uint8) ((code >> 2) & 0x7);
+        uint8 u = (uint8) ((code >> 2) & 0x7);
         uint8 d = (uint8) (code & 0x3);
-        uint8 uid_to_del = (uint8) ((uid + 1 + d) % 5);
-        if (verify_account(uid, pwd)) {
-            if (delete_user(uid_to_del) == SUCCESS) {
+        uint8 u_to_del = (uint8) ((u + 1 + d) % 5);
+        if (verify_account(u<<2, pwd)) {
+            if (delete_user(u_to_del) == SUCCESS) {
                 response[0] = (uint8) (code | 0x80);
             } else {
                 response[0] = 0xff;
@@ -89,10 +91,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
         uint8 uid = (uint8) ((code & ~MASK_5BIT) << 2);
         if (verify_account(uid, pwd)) {
             response[0] = CC_INQUIRY | 0x80;
-            uint8 i;
-            for (i=0; i<5; i++) {
-                response[1] |= (has_user(i)<<i);
-            }
+            response[1] = get_user_bitset();
         } else {
             response[0] = 0xff;
             response[1] = CC_UNLOCK;
@@ -128,6 +127,7 @@ uint16 App_ProcessEvent( uint8 task_id, uint16 events ) {
         return (uint16) (events ^ SYS_EVENT_MSG);
     } else if (events & LOCK_EVT) {
         btl_lock();
+        Actor_Save();
         return (uint16) (events ^ LOCK_EVT);
     }
 }

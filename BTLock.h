@@ -6,10 +6,10 @@
 #include "comdef.h"
 
 /* Macros */
-#define DATA_LEN 15
+#define PARAM_LEN 15
 
 /* Typedefs */
-typedef uint8 Param[DATA_LEN];
+typedef uint8 Param[PARAM_LEN];
 
 /* Hardware Manipulation */
 /*********************************************************************
