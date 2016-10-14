@@ -4,6 +4,7 @@
 #include "BTLock.h"
 #include "command_code.h"
 #include "simpleGATTprofile.h"
+#include "gatt.h"
 
 uint8 App_TaskID;
 
@@ -20,7 +21,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
     uint8 *data = ptr -> data;
     uint8 *pwd = data + 1;
     uint8 code = data[0];
-    uint8 response[16] = {};
+    uint8 response[16] = {0};
     if((code & MASK_3BIT) == CC_UNLOCK) {
         uint8 uid = (uint8) (code & ~MASK_3BIT);
         if(verify_account(uid, pwd)){
@@ -63,7 +64,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
                 uint8 uid = add_user();
                 uint8 *p = get_user_pwd(uid);
                 osal_memcpy(response + 1, p, 15);
-                response[0] = (uint8) (CC_ADD_USER | uid);
+                response[0] = (uint8) (CC_ADD_USER | uid | 0x80);
                 osal_mem_free(p);
             }
             osal_mem_free(verification);
@@ -102,6 +103,7 @@ void App_ProcessOSALMsg(appEvt_t *ptr) {
     }
 
     osal_mem_free(data);
+    osal_msg_deallocate((uint8*)ptr);
 
     SimpleProfile_SetParameter(BTLOCK_AUTH_CHAR, BTLOCK_AUTH_CHAR_LEN, response);
 }

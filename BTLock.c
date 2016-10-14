@@ -2,9 +2,11 @@
 #include "BTLock.h"
 #include "hal_led.h"
 #include "hal_lcd.h"
-#include "hal_lcd.c"
 #include "OSAL.h"
 #include "osal_snv.h"
+
+extern void LCD_CLS();
+extern void LCD_P6x8Str(unsigned char x, unsigned char y,unsigned char ch[]);
 
 bool in_range(uint16 position) {
     if (position >= 0x80 && position < 0xF0) {
@@ -62,7 +64,7 @@ uint8 write_flash(uint8 position, uint8 size, void *p_buffer) {
 uint8* start_verification() {
     uint8* ret = osal_mem_alloc(15);
     osal_memset(ret, 0, 15);
-    uint8 v[7]={};
+    uint8 v[7]={0};
     int i;
     for(i=0;i<6;i+=2){
         uint16 r = btl_rand16();

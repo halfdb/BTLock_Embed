@@ -8,7 +8,7 @@
 uint8 account_bitsets[4] = {0, 0, 0, 0};
 uint8 pwd_modified[4] = {0, 0, 0, 0};
 #define BITSET_POSITION 0xA0
-Param passwords[20] = {};
+Param passwords[20] = {0};
 #define INDEX_FOR_UID(I) ((I)-UID_10)
 #define POSITION_FOR_UID(I) ((uint8)(INDEX_FOR_UID(I)+BITSET_POSITION+1))
 
@@ -71,7 +71,7 @@ bool verify_account(uint8 uid, Param password) {
 
 void generate_pwd(Param pwd) {
     int i;
-    uint16 *p = pwd;
+    uint16 *p = (uint16 *) pwd;
     for(i=0; i<PARAM_LEN/2; i++) {
         p[i] = btl_rand16();
     }

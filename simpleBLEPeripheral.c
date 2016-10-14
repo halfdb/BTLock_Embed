@@ -344,7 +344,7 @@ void SimpleBLEPeripheral_Init( uint8 task_id )
   // Setup the GAP Bond Manager
   {
     uint32 passkey = 0; // passkey "000000"
-    uint8 pairMode = GAPBOND_PAIRING_MODE_WAIT_FOR_REQ;
+    uint8 pairMode = GAPBOND_PAIRING_MODE_INITIATE;
     uint8 mitm = TRUE;
     uint8 ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8 bonding = TRUE;
@@ -786,7 +786,7 @@ static void simpleProfileChangeCB( uint8 paramID )
           appEvt_t * msg = (appEvt_t *) osal_msg_allocate(sizeof(appEvt_t));
           msg->data = osal_mem_alloc(16);
           osal_memcpy(msg->data, authCharValue, 16);
-          osal_msg_send(App_TaskID, msg);
+          osal_msg_send(App_TaskID, (uint8*)msg);
       }
       break;
 
